@@ -30,7 +30,7 @@ def load_data(file_url):
         datetime_utc = pd.to_datetime(df["datetime"], format='%d:%m:%Y %H:%M:%S')
         datetime_pac = pd.to_datetime(datetime_utc).dt.tz_localize('UTC').dt.tz_convert('US/Pacific')
         df.set_index(datetime_pac, inplace=True)
-        
+
         return df
     except Exception as e:
         st.error(f"Failed to process the file from {file_url}: {e}")
@@ -43,15 +43,15 @@ if file_url_1:
 
 # Ensure data is loaded and columns are correct
 if df_1 is not None:
-    if 'AOD_412nm' not in df_1.columns or 'AOD_532nm' not in df_1.columns or 'AOD_667nm' not in df_1.columns:
+    if 'AOD_440nm' not in df_1.columns or 'AOD_500nm' not in df_1.columns or 'AOD_667nm' not in df_1.columns:
         st.error(f"Missing expected columns in the dataset. Available columns: {df_1.columns}")
-    
+
     # Plot data from the first repository if columns are correct
-    if 'AOD_412nm' in df_1.columns and 'AOD_532nm' in df_1.columns and 'AOD_667nm' in df_1.columns:
-        
-        # Plot AOD_440nm, AOD_500nm, and AOD_675nm as initial plot
-        plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_412nm"].resample(SampleRate).mean(), '.k')
-        plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_532nm"].resample(SampleRate).mean(), '.k')
+    if 'AOD_440nm' in df_1.columns and 'AOD_500nm' in df_1.columns and 'AOD_667nm' in df_1.columns:
+
+        # Plot AOD_440nm, AOD_500nm, and AOD_667nm as initial plot
+        plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_440nm"].resample(SampleRate).mean(), '.k')
+        plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_500nm"].resample(SampleRate).mean(), '.k')
         plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_667nm"].resample(SampleRate).mean(), '.k')
 
         # Format the plot
@@ -63,7 +63,7 @@ if df_1 is not None:
         plt.legend()
         plt.title("AOD Turlock")  # Added title for AOD graph
         st.pyplot(plt.gcf())
-        
+
         # Ask user to match wavelengths to positions
         st.text("\nMatch the wavelengths to the positions on the graph:")
         # Dropdown menus for user input with no default selection
@@ -72,15 +72,15 @@ if df_1 is not None:
         # Create user input dropdowns for selecting wavelengths
         user_matches = {}
         for pos in positions:
-            user_matches[pos] = st.selectbox(f"What Wavelength will have the {pos} measurment on the graph?", 
-                                             options=["Select an option", "400 nm", "500 nm", "675 nm"], 
+            user_matches[pos] = st.selectbox(f"What Wavelength will have the {pos} measurement on the graph?", 
+                                             options=["Select an option", "440 nm", "500 nm", "667 nm"], 
                                              key=pos)
 
         # Once the user submits, show the second graph (same as the first)
         if st.button("Submit"):
             # Plot the second graph (exact same as the first one)
-            plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_412nm"].resample(SampleRate).mean(), '.b', label="412 nm")
-            plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_532nm"].resample(SampleRate).mean(), '.g', label="532 nm")
+            plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_440nm"].resample(SampleRate).mean(), '.b', label="440 nm")
+            plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_500nm"].resample(SampleRate).mean(), '.g', label="500 nm")
             plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_667nm"].resample(SampleRate).mean(), '.r', label="667 nm")
 
             # Format the second plot
@@ -90,8 +90,8 @@ if df_1 is not None:
             plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
             plt.ylim(AOD_min, AOD_max)
             plt.legend()
-            #plt.title("AOD Turlock")  # Added title for AOD graph
             st.pyplot(plt.gcf())
+
 
      # URL for the wind data file
 windfile = 'https://raw.githubusercontent.com/Rsaltos7/TurlockAOD2024/refs/heads/main/72492623258%20(4).csv'
